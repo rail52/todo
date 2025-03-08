@@ -1,0 +1,25 @@
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: todo
+      POSTGRES_USER: todo
+      POSTGRES_PASSWORD: todo
+    volumes:
+      - "db:/var/lib/postgresql/data"
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+    links:
+      - postgres:db
+    depends_on:
+      - postgres
+
+
+
+volumes:
+  db:
