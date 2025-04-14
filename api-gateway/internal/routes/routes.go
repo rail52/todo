@@ -4,6 +4,7 @@ import (
 	"api-gateway/internal/config"
 	"log"
 	"log/slog"
+	"github.com/go-chi/render"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -33,7 +34,9 @@ func NewRouter(log *slog.Logger, cfg *config.Config) http.Handler {
 	router.Use(middleware.RequestID)
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.Logger)
-
+	router.Get("/about", func(w http.ResponseWriter, r *http.Request) {
+		render.JSON(w, r, "THIS IS ABOUT PAGE")
+	})
 	auth := cfg.AuthServiceAddress
 	router.Route("/auth", func(r chi.Router) {
 		r.Post("/register", newProxy(auth))
