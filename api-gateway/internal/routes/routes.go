@@ -34,6 +34,13 @@ func NewRouter(log *slog.Logger, cfg *config.Config) http.Handler {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.Logger)
 
+	auth := cfg.AuthServiceAddress
+	router.Route("/auth", func(r chi.Router) {
+		r.Post("/register", newProxy(auth))
+		r.Post("/login", newProxy(auth))
+		r.Post("/refresh", newProxy(auth))
+		r.Post("/logout", newProxy(auth))
+	})
 	
 
 	return router
