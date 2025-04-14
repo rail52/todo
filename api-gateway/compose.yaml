@@ -1,10 +1,19 @@
 services:
-  app:
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    networks:
+     - app-network
+
+  api-gateway:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
     env_file: 
       - .env
     volumes:
