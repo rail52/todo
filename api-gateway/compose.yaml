@@ -1,0 +1,17 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    env_file: 
+      - .env
+    volumes:
+      - ./.env:/app/.env
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
