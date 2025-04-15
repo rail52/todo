@@ -25,6 +25,8 @@ func newProxy(target string) http.HandlerFunc {
 		log.Printf("proxy error: %v", err)
 		http.Error(w, "bad gateway", http.StatusBadGateway)
 	}
+	print("addresssssssssss:")
+	println(target)
 	return proxy.ServeHTTP
 }
 

@@ -1,0 +1,83 @@
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - ./api-gateway/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    networks:
+     - app-network
+
+  api-gateway-service:
+    container_name: api-gateway-service
+    build: 
+      context: ./api-gateway      
+      dockerfile: Dockerfile
+    env_file:  
+      - ./api-gateway/.env
+    volumes:
+      - ./api-gateway/.env:/app/.env
+    networks:
+      - app-network
+
+  auth-service-postgres:
+    image: postgres:15
+    env_file:
+      - ./auth/.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./auth/migrations:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d mentors"]
+      interval: 10s
+      timeout: 5s
+      retries: 5  
+    networks:
+      - app-network
+
+  auth-service-redis:
+    image: redis:7
+    env_file:
+      - ./auth/.env
+    command: redis-server --requirepass 123
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  auth-service:
+    container_name: auth-service
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+    env_file:
+      - ./auth/.env
+    volumes:
+      - ./auth/.env:/app/.env
+    depends_on:
+      auth-service-redis:
+        condition: service_healthy
+      auth-service-postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  app-network:
+    driver: bridge
