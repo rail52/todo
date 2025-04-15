@@ -9,7 +9,7 @@ import (
 
 type Config struct {
 	Address            string        `yaml:"address" env-default:"0.0.0.0:8080"`
-	AuthServiceAddress string        `yaml:"auth-service-address"`
+	AuthServiceAddress string        `yaml:"auth_service_address", env-required:"true"`
 	Env                string        `yaml:"env" env-default:"local"`
 	Timeout            time.Duration `yaml:"timeout"`
 	IdleTimeout        time.Duration `yaml:"idle_timeout"`

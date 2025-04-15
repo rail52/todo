@@ -1,0 +1,36 @@
+# macOS specific files
+.DS_Store
+.AppleDouble
+.LSOverride
+# macOS system files
+Icon?
+._*
+
+# Thumbnails
+Thumbs.db
+
+# VSCode specific files
+.vscode/
+*.code-workspace
+
+# Logs
+logs/
+*.log
+
+# Dependency directories
+node_modules/
+vendor/
+
+# Build directories
+dist/
+build/
+out/
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*.bak
+*.orig
+*.rej
+tmp

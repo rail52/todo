@@ -2,4 +2,4 @@ env: "local"
 address: "0.0.0.0:8080"
 timeout: 4s
 idle_timeout: 60s
-auth_service-address: "htt://auth-service:8081"
+auth_service_address: "http://auth-service:8081"
