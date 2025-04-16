@@ -1,4 +1,4 @@
-FROM golang:1.23-alpine AS builder
+FROM golang:1.24-alpine AS builder
 
 WORKDIR /app
 
@@ -18,9 +18,10 @@ WORKDIR /app
 
 COPY --from=builder /app/auth-service /app/auth-service
 
+COPY --from=builder /app/keys /app/keys
+
 COPY --from=builder /app/.env /app/.env
 
-COPY --from=builder /app/keys /app/keys
 
 EXPOSE 8081
 

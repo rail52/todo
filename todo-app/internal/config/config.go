@@ -8,12 +8,17 @@ import (
 )
 
 type Config struct {
-	Address               string        `yaml:"address" env-default:"0.0.0.0:8080"`
-	AuthServiceAddress    string        `yaml:"auth-service_address", env-required:"true"`
-	TodoAppServiceAddress string        `yaml:"todo-app-service_address", env-required:"true"`
-	Env                   string        `yaml:"env" env-default:"local"`
-	Timeout               time.Duration `yaml:"timeout"`
-	IdleTimeout           time.Duration `yaml:"idle_timeout"`
+	Env              string        `yaml:"env" env-default:"local"`
+	Address          string        `yaml:"address"`
+	DBServiceAddress string        `yaml:"db-service_address" env-required:"true"`
+	Timeout          time.Duration `yaml:"timeout"`
+	IdleTimeout      time.Duration `yaml:"idle_timeout"`
+	Kafka            `yaml:"kafka"`
+}
+
+type Kafka struct {
+	Brokers []string `yaml:"kafka_brokers"`
+	Topic   string   `yaml:"kafka_topic"`
 }
 
 func MustLoad() *Config {

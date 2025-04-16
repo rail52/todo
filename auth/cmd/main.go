@@ -16,7 +16,7 @@ import (
 	"auth/internal/lib/logger/sl"
 	"auth/internal/storage/cache"
 	"auth/internal/storage/db"
-	"auth/pkg/token"
+	"auth/internal/token"
 	"net/http"
 	"os"
 

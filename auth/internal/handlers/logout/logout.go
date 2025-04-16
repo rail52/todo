@@ -5,7 +5,7 @@ import (
 	"auth/internal/domain/response"
 	"auth/internal/lib/logger/sl"
 	"auth/internal/lib/validate"
-	"auth/pkg/token"
+	"auth/internal/token"
 	"log/slog"
 	"net/http"
 	"time"
@@ -64,7 +64,7 @@ func Logout(log *slog.Logger, redisRepo RedisRepo, tokenMn TokenMn) http.Handler
 
 		claims, err := tokenMn.ParseToken(req.RefreshToken)
 		if err != nil {
-			log.Error("failed to parse redresh token", sl.Err(err))
+			log.Error("failed to parse refresh token", sl.Err(err))
 			render.Status(r, http.StatusUnauthorized)
 			render.JSON(w, r, response.Error("invalid token"))
 			return

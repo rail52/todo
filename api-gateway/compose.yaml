@@ -1,13 +1,13 @@
 services:
   nginx:
-    image: nginx:latest
     container_name: nginx
+    image: nginx:latest
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
       - "80:80"
     networks:
-     - app-network
+     - shared_network
 
   api-gateway-service:
     container_name: api-gateway-service
@@ -19,8 +19,8 @@ services:
     volumes:
       - ./.env:/app/.env
     networks:
-      - app-network
+      - shared_network
 
 networks:
-  app-network:
-    driver: bridge
+  shared_network:
+    external: true

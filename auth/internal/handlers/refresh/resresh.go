@@ -4,12 +4,11 @@ import (
 	"auth/internal/domain/requests"
 	"auth/internal/domain/response"
 	"auth/internal/lib/logger/sl"
-	"auth/internal/lib/validate"
-	"auth/pkg/token"
+	"auth/internal/lib/validate"	
+	"auth/internal/token"
 	"log/slog"
 	"net/http"
 	"time"
-
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 )
