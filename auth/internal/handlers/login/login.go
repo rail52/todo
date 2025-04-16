@@ -7,7 +7,7 @@ import (
 	"auth/internal/lib/logger/sl"
 	"auth/internal/lib/validate"
 	"auth/internal/storage/db"
-	"auth/pkg/token"
+	"auth/internal/token"
 	"errors"
 	"log/slog"
 	"net/http"

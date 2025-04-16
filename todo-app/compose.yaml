@@ -1,0 +1,103 @@
+services:
+
+  todo-app-service:
+    container_name: todo-app-service
+    build: 
+      context: .  
+      dockerfile: Dockerfile
+    ports:
+        - 8082:8082
+    env_file:  
+      - .env
+    volumes:
+      - ./.env:/app/.env
+    networks:
+      - shared_network
+
+
+  zookeeper:
+    container_name: zookeeper
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+    networks:
+      - shared_network
+  
+  kafka:
+    container_name: kafka
+    image: wurstmeister/kafka
+    ports:
+    - "9092:9092"
+    - "29092:29092"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    depends_on:
+      - zookeeper
+    networks:
+      - shared_network
+  
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - "8087:8080"
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: "local"
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:9092"
+      DYNAMIC_CONFIG_ENABLED: "true"
+    networks:
+      - shared_network
+
+
+  loki:
+    image: grafana/loki:2.9.3
+    container_name: loki
+    ports:
+    - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+    - loki_data:/loki 
+    networks:
+      - shared_network
+    
+
+  promtail:
+    container_name: promtail
+    ports:
+      - 9080:9080
+    image: grafana/promtail:2.9.3
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./monitoring/promtail-config.yaml:/etc/promtail/promtail-config.yaml:ro
+    command: -config.file=/etc/promtail/promtail-config.yaml
+    networks:
+      - shared_network
+    depends_on:
+      - loki
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - shared_network
+    depends_on:
+      - loki
+
+networks:
+  shared_network:
+    external: true
+
+volumes:
+  loki_data:

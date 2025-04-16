@@ -2,4 +2,5 @@ env: "local"
 address: "0.0.0.0:8080"
 timeout: 4s
 idle_timeout: 60s
-auth_service_address: "http://auth-service:8081"
+auth-service_address: "http://auth-service:8081"
+todo-app-service_address: "http://todo-app-service:8082"
