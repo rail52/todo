@@ -1,6 +1,6 @@
 services:
-  auth-service-postgres:
-    container_name: auth-service-postgres
+  db-service-postgres:
+    container_name: db-service-postgres
     image: postgres:15-alpine
     env_file:
       - .env
@@ -8,14 +8,16 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+    ports: 
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./migrations:/docker-entrypoint-initdb.d
     networks:
       - shared_network
 
-  auth-service-redis:
-    container_name:  auth-service-redis
+  db-service-redis:
+    container_name:  db-service-redis
     image: redis:7-alpine
     env_file:
       - .env
@@ -26,9 +28,9 @@ services:
     networks:
       - shared_network
 
-  auth-service:
-    image: auth-service
-    container_name: auth-service
+  db-service:
+    image: db-service
+    container_name: db-service
     build:
       context: .
       dockerfile: Dockerfile
@@ -39,8 +41,8 @@ services:
     networks:
       - shared_network
     depends_on:
-      - auth-service-postgres
-      - auth-service-redis
+      - db-service-postgres
+      - db-service-redis
   
 
 volumes:

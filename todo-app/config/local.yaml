@@ -1,7 +1,6 @@
 env: "local"
 address: ":8082"
-db-service_address: "http://db-service:8083"
-
+db-service_address: "db-service:51051"
 timeout: 4s
 idle_timeout: 60s
 kafka:

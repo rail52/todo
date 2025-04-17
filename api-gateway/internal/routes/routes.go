@@ -58,6 +58,15 @@ func NewRouter(log *slog.Logger, cfg *config.Config) http.Handler {
 		r.Patch("/{id}", newProxy(todoApp))
 		r.Delete("/{id}", newProxy(todoApp))
 	})
+	// DB := cfg.DBServiceAddress
+	// router.Route("/tasks", func(r chi.Router) {
+	// 	r.Post("/", newProxy(todoApp))
+	// 	r.Get("/", newProxy(todoApp))
+	// 	r.Get("/{id}", newProxy(todoApp))
+	// 	r.Put("/{id}", newProxy(todoApp))
+	// 	r.Patch("/{id}", newProxy(todoApp))
+	// 	r.Delete("/{id}", newProxy(todoApp))
+	// })
 
 	return router
 }
