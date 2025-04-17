@@ -15,8 +15,6 @@ type Config struct {
 
 	Address string `env:"ADDRESS" env-required:"true"`
 
-	MentorServiceAddress string `env:"MENTOR_SERVICE_ADDRESS" env-required:"true"`
-
 	Env string `env:"ENV" env-required:"true"`
 
 	AccessTokenTTL  int64 `env:"ACCES_TOKEN_TTL" env-default:"1800"`

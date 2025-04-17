@@ -24,13 +24,6 @@ func CreateTask(log *slog.Logger, storage dbpb.PostgresClient, kafkaProducer Kaf
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
 
-		event := &requests.ApiRequest{
-			Action: "created",
-		}
-		if err := kafkaProducer.SendApiEvent(event); err != nil {
-			log.Error("failed to send kafka even", (slog.String("error", err.Error())))
-		}
-		return
 		var req requests.CreateTaskRequest
 		err := render.DecodeJSON(r.Body, &req)
 		if errors.Is(err, io.EOF) {
@@ -45,18 +38,24 @@ func CreateTask(log *slog.Logger, storage dbpb.PostgresClient, kafkaProducer Kaf
 			http.Error(w, Err, http.StatusBadRequest)
 			return
 		}
-
+		
 		task, err := storage.CreateTask(r.Context(),
-			&dbpb.CreateTaskRequest{
-				Title:   req.Title,
-				Content: req.Content},
+		&dbpb.CreateTaskRequest{
+			Title:   req.Title,
+			Content: req.Content},
 		)
 		if err != nil {
 			log.Error("Failed to take tasks: ", slog.String("err", err.Error()))
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-
+		
 		render.JSON(w, r, &task)
+		event := &requests.ApiRequest{
+			Action: "created",
+		}
+		if err := kafkaProducer.SendApiEvent(event); err != nil {
+			log.Error("failed to send kafka even", (slog.String("error", err.Error())))
+		}
 	}
 }

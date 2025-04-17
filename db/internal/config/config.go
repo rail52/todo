@@ -4,14 +4,16 @@ import (
 	"github.com/ilyakaznacheev/cleanenv"
 	"log"
 	"os"
+	"db/internal/storage/db/postgres"
+	"db/internal/storage/cache/redis"
 	"time"
 )
 
 type Config struct {
-	Address               string        `yaml:"address" env-default:"0.0.0.0:8080"`
-	AuthServiceAddress    string        `yaml:"auth-service_address" env-required:"true"`
-	TodoAppServiceAddress string        `yaml:"todo-app-service_address" env-required:"true"`
+	Postgres postgres.Config
+	Redis redis.Config
 	Env                   string        `yaml:"env" env-default:"local"`
+	Address               string        `yaml:"address"`
 	Timeout               time.Duration `yaml:"timeout"`
 	IdleTimeout           time.Duration `yaml:"idle_timeout"`
 }
