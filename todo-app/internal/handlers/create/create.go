@@ -1,22 +1,29 @@
 package create
 
 import (
+	"context"
 	"errors"
 	"io"
 	"log/slog"
 	"net/http"
 	"todo-app/internal/domain/requests"
+	"google.golang.org/grpc"
 
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 	"github.com/rail52/myprojects/dbpb"
 )
-
+//go:generate go run github.com/vektra/mockery/v2@latest --name=KafkaProducer
 type KafkaProducer interface {
 	SendApiEvent(apiRequest *requests.ApiRequest) error
 }
 
-func CreateTask(log *slog.Logger, storage dbpb.PostgresClient, kafkaProducer KafkaProducer) http.HandlerFunc {
+//go:generate go run github.com/vektra/mockery/v2@latest --name=Creator
+type Creator interface {
+	CreateTask(ctx context.Context, in *dbpb.CreateTaskRequest, opts ...grpc.CallOption) (*dbpb.Task, error)
+}
+
+func CreateTask(log *slog.Logger, client Creator, kafkaProducer KafkaProducer) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fn := "internal/http-server/handlers/handlers.go|CreateTask()"
 		log = log.With(
@@ -28,8 +35,8 @@ func CreateTask(log *slog.Logger, storage dbpb.PostgresClient, kafkaProducer Kaf
 		err := render.DecodeJSON(r.Body, &req)
 		if errors.Is(err, io.EOF) {
 			Err := "request body is empty"
-			log.Info(Err)
-			render.JSON(w, r, Err)
+			log.Info(Err)			
+			http.Error(w, Err, http.StatusBadRequest)
 			return
 		}
 		if req.Title == "" || req.Content == "" {
@@ -39,7 +46,7 @@ func CreateTask(log *slog.Logger, storage dbpb.PostgresClient, kafkaProducer Kaf
 			return
 		}
 		
-		task, err := storage.CreateTask(r.Context(),
+		task, err := client.CreateTask(r.Context(),
 		&dbpb.CreateTaskRequest{
 			Title:   req.Title,
 			Content: req.Content},
